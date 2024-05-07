@@ -1,0 +1,106 @@
+# TSTL code for InventorySystem
+
+# Define SUT (System Under Test) functions
+def add_item(item):
+    if item.name in items:
+        return "Item already exists."
+    items[item.name] = item
+    return "Item added successfully."
+
+def update_item(name, quantity=None, price=None):
+    if name not in items:
+        return "Item not found."
+
+    if quantity is not None:
+        items[name].quantity = quantity
+
+    if price is not None:
+        items[name].price = price
+
+    return "Item updated successfully."
+
+def remove_item(name):
+    if name in items:
+        del items[name]
+        return "Item removed successfully."
+    return "Item not found."
+
+def list_items():
+    if not items:
+        return "No items in inventory."
+    return "\n".join(str(item) for item in items.values())
+
+def get_item(name):
+    if name in items:
+        return str(items[name])
+    return "Item not found."
+
+def stock_check(name):
+    if name in items:
+        return items[name].quantity
+    return "Item not found."
+
+def calculate_total_value():
+    total_value = sum(item.quantity * item.price for item in items.values())
+    return total_value
+
+def restock_item(name, quantity):
+    if name in items:
+        items[name].quantity += quantity
+        return f"{quantity} units of {name} restocked successfully."
+    return "Item not found."
+
+def notify_low_stock(threshold):
+    low_stock_items = [item.name for item in items.values() if item.quantity < threshold]
+    if low_stock_items:
+        return f"The following items are running low on stock: {', '.join(low_stock_items)}"
+    return "No items are running low on stock."
+
+def export_inventory(filename):
+    with open(filename, 'w') as file:
+        for item in items.values():
+            file.write(f"{item.name},{item.quantity},{item.price}\n")
+    return "Inventory exported successfully."
+
+def import_inventory(filename):
+    with open(filename, 'r') as file:
+        for line in file:
+            name, quantity, price = line.strip().split(',')
+            quantity = int(quantity)
+            price = float(price)
+            items[name] = InventoryItem(name, quantity, price)
+    return "Inventory imported successfully."
+
+# Define TSTL adapter functions
+def add_item_adapter(name, quantity, price):
+    return add_item(InventoryItem(name, quantity, price))
+
+def update_item_adapter(name, quantity=None, price=None):
+    return update_item(name, quantity, price)
+
+def remove_item_adapter(name):
+    return remove_item(name)
+
+def list_items_adapter():
+    return list_items()
+
+def get_item_adapter(name):
+    return get_item(name)
+
+def stock_check_adapter(name):
+    return stock_check(name)
+
+def calculate_total_value_adapter():
+    return calculate_total_value()
+
+def restock_item_adapter(name, quantity):
+    return restock_item(name, quantity)
+
+def notify_low_stock_adapter(threshold):
+    return notify_low_stock(threshold)
+
+def export_inventory_adapter(filename):
+    return export_inventory(filename)
+
+def import_inventory_adapter(filename):
+    return import_inventory(filename)
